@@ -140,8 +140,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   List<Note> notes = [];
   List<Note> trashNotes = [];
   bool isLoading = true;
-
-  static const String baseUrl = "http://10.158.19.32:3002/api/notes";
+   static const String baseUrl = "http://10.158.19.32:3002/api/notes";
 
   @override
   void initState() {
@@ -155,25 +154,34 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     try {
       final response = await http.get(Uri.parse(baseUrl));
+      print("fetchNotes called");
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
 
-      if (response.statusCode == 200) {
-        final decodedData = jsonDecode(response.body);
-        List<dynamic> data = [];
+      final decodedData = jsonDecode(response.body);
 
-        if (decodedData is List) {
-          data = decodedData;
-        } else if (decodedData is Map<String, dynamic> &&
-            decodedData.containsKey('data')) {
-          data = decodedData['data'];
-        }
+      print("Decoded Data: $decodedData");
 
-        setState(() {
-          notes = data.map((e) => Note.fromJson(e)).toList();
-          isLoading = false;
-        });
-      } else {
-        setState(() => isLoading = false);
+      List<dynamic> data = [];
+
+      if (decodedData is List) {
+        data = decodedData;
+      } else if (decodedData is Map<String, dynamic> &&
+          decodedData.containsKey("data")) {
+        data = decodedData["data"];
       }
+
+      print("Data Length: ${data.length}");
+
+      setState(() {
+        notes = data.map((e) => Note.fromJson(e)).toList();
+        isLoading = false;
+      });
+
+      print("Notes Length: ${notes.length}");
+      print(notes);
+
+      print("Notes Length: ${notes.length}");
     } catch (e) {
       setState(() => isLoading = false);
       debugPrint("Error fetching: $e");
